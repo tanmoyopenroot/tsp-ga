@@ -1,7 +1,8 @@
 var population,
 	pop_size = 100,
 	gen_cout = 0,
-	max_gen = 1000;
+	max_gen = 600,
+	gen_wise_dist = [];
 
 function getCities() {
 	// Create and add our cities
@@ -37,12 +38,33 @@ function display() {
 	// population.displayPOP();
 }
 
+function drawGraph() {
+	stroke(200);
+	strokeWeight(5);
+	line(250, 0, 250, 250);
+
+	let max_dist = gen_wise_dist.reduce(function(a, b) {
+		return Math.max(a, b);
+	});
+
+	for (let i = 0; i < gen_wise_dist.length - 1; i++) {
+		// if (gen_wise_dist[i]) {
+			stroke(200);
+			strokeWeight(1);
+			line(300 + i, 250, 300 + i, 250 - (gen_wise_dist[i] / max_dist) * 150 );
+		// }
+	}
+
+}
+
 function setup() {
-	createCanvas(400, 220);
+	createCanvas(1050, 250);
+
 	let cities = getCities(),  
 		mutation_rate = 0.03, 
 		elitism = true, 
 		tournment_size = 10;
+	
 	population = new Population(pop_size, mutation_rate, elitism, tournment_size);
 	population.init(cities);
 
@@ -50,6 +72,7 @@ function setup() {
 	pop_size_disp = createP("Population Size : " + pop_size);
 	mutation_disp = createP("Mutation Rate : " + mutation_rate);
 	tournament_disp = createP("Tournament Size : " + tournment_size);
+
 	gen_disp = createP();	
 	best_fitness_disp = createP();
 	best_tour_disp = createP();
@@ -58,9 +81,18 @@ function setup() {
 
 function draw() {
 	background(0);
+	
 	display();
+
 	population.evolve();
+	
+	gen_wise_dist.push(population.tours[population.best_tour_index].distance_covered);
 	gen_cout++;
-	if (gen_cout > max_gen)
+	
+	drawGraph();
+
+	if (gen_cout > max_gen) {
+		console.log(gen_wise_dist);
 		noLoop();
+	}	
 }
