@@ -1,2 +1,2 @@
-# tsp_ga
-Applying a genetic algorithm to the traveling salesman problem
+# tsp-ga
+    Applying a genetic algorithm to the traveling salesman problem
