@@ -1,7 +1,7 @@
 var population,
 	pop_size = 100,
 	gen_cout = 0,
-	max_gen = 600,
+	max_gen = 700,
 	gen_wise_dist = [];
 
 function getCities() {
@@ -63,10 +63,12 @@ function setup() {
 	let cities = getCities(),  
 		mutation_rate = 0.03, 
 		elitism = true, 
-		tournment_size = 10;
+		tournment_size = 10,
+		temperature = 1000,
+		cooling_rate = 0.03;
 	
 	population = new Population(pop_size, mutation_rate, elitism, tournment_size);
-	population.init(cities);
+	population.init(cities, temperature, cooling_rate);
 
 	title_disp = createP("Travelling Sales Person");
 	pop_size_disp = createP("Population Size : " + pop_size);

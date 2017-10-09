@@ -8,14 +8,53 @@ function Population(size, mutation_rate, elitism, tournament_size) {
     this.best_tour_index = 0
 }
 
-Population.prototype.init = function(cities) {
-    console.log("Initial Population Of Size" + this.size);
-    for (let i = 0; i < this.size; i++) {
-        this.tours[i] = new Tours(cities.length);
-        this.tours[i].add(shuffle(cities));
+Population.prototype.acceptanceProbability = function(fitness_diff, temp) {
+    return Math.exp(fitness_diff / temp);
+}
+
+Population.prototype.init = function(cities, temp, rate) {
+    // console.log("Initial Population Of Size " + this.size);
+
+    let current_tour = new Tours(cities.length), 
+        current_tour_fitness = 0,
+        new_tour,
+        new_tour_fitness = 0,
+        fitness_diff = 0
+        temperature = temp,
+        cooling_rate = rate;
+
+    current_tour.add(shuffle(cities));
+    this.tours.push(current_tour);
+
+    while (this.tours.length < this.size) {
+        new_tour = new Tours(cities.length);
+        new_tour.add(shuffle(cities));
+
+        current_tour_fitness = current_tour.fitness();
+        new_tour_fitness = new_tour.fitness();
+
+        if (new_tour_fitness > current_tour_fitness) {
+            this.tours.push(new_tour)
+            current_tour = new_tour;
+        }
+        else {
+            fitness_diff = current_tour_fitness - new_tour_fitness;
+            // console.log(fitness_diff + " -- " + temperature);
+            if (this.acceptanceProbability(fitness_diff, temperature) > Math.random())
+                this.tours.push(new_tour);
+        }
+
+        temperature *= 1 - cooling_rate;
+    }
+
+    // for (let i = 0; i < this.size; i++) {
+        // this.tours[i] = new Tours(cities.length);
+        // this.tours[i].add(shuffle(cities));
         // this.tours[i].shuffle()
         // console.log(this.tours[i].cities);
-    }
+    // }
+
+    console.log("Tour Sizez : " + this.tours.length);
 }
 
 Population.prototype.fittest = function() {
